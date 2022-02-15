@@ -17,6 +17,7 @@ from .constants import IMPRESSION_TYPES
 from .constants import OFFERS
 from .constants import PAID_CAMPAIGN
 from .constants import VIEWS
+from .importers import psf
 from .models import AdImpression
 from .models import Flight
 from .models import GeoImpression
@@ -611,3 +612,15 @@ def notify_of_publisher_changes(difference_threshold=0.25, min_views=10_000):
                             ),
                         },
                     )
+
+
+@app.task()
+def run_publisher_importers():
+    """
+    Run a sync task for all the importers from our various publishers.
+
+    This is done nightly to ensure imported data is up to date.
+    """
+
+    # PSF is the only importer for now..
+    psf.run_import(sync=True)
